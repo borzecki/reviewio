@@ -1,0 +1,3 @@
+PyGithub==1.43
+click==6.7
+colorama==0.3.9
