@@ -6,7 +6,7 @@ setup(
     author='borzeckid',
     author_email='borzecki.daniel@gmail.com',
     description= 'Display statistics of pull request reviewers for your project',
-    url=''
+    url='https://github.com/borzecki/reviewio',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
