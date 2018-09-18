@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="assets/reviewio-logo.png" alt="bat - a cat clone with wings"><br>
+  <img src="assets/reviewio-logo.png"><br>
   Take a sip of coffee, kick back and enjoy pull request stats from your project!
 </p>
 
