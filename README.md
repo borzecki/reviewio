@@ -73,8 +73,16 @@ alexh546             [--------------------------------------------]     1.3% (2)
 
 ### Hint
 
-You can use this super secret command to get a list of all your repositories.
+You can use this super secret commands:
+
+* To get list of repositories
 
 ```
-reviewio list_repos
+$ reviewio repos
+```
+
+* To get list of labels for given repository
+
+```
+$ reviewio labels django/django
 ```
