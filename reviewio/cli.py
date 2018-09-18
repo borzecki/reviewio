@@ -15,7 +15,7 @@ def print_bar(iteration, total, prefix='', length=44):
 
 def extract_reviewers(pull_request):
     sources = [
-        set([ rev.user for rev in pull_request.get_reviews() if rev.state in ['APPROVED', 'DECLINED']]),
+        set([ rev.user for rev in pull_request.get_reviews() if rev.state in ['APPROVED', 'REQUEST_CHANGES']]),
         set([ rev for rev in pull_request.get_review_requests()[0]]),
         set([ rev for rev in pull_request.get_review_requests()[1]])
     ]
