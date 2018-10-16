@@ -46,9 +46,9 @@ def cli(token):
 
 @cli.command()
 @click.argument('name')
-@click.option('--label')
+@click.option('--label', 'labels', multiple=True)
 @click.option('--state', default='open')
-def show(name, label, state):
+def show(name, labels, state):
     """Display reviewers stats for given repository"""
     g = Github(cli.token)
 
@@ -61,9 +61,10 @@ def show(name, label, state):
     review_counter = Counter()
     creator_counter = Counter()
 
-    if label:
+    if labels:
+        labels = set(labels)
         pull_requests = [p for p in pull_requests if
-                         any(filter(lambda l: l.name == label, p.labels))]
+                         labels <= set(l.name for l in p.labels)]
         pull_requests_length = len(pull_requests)
 
     with click.progressbar(pull_requests, length=pull_requests_length,
