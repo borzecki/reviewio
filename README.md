@@ -38,8 +38,8 @@ export GITHUB_TOKEN='{TOKEN}'
 
 In order to preview stats you'll need to supply project name.
 
-Optionally you can filter by `open`, `closed` or `all` pull requests.
-If you want you can also filter by `label` name.
+Optionally you can filter by `open`, `closed` or `all` pull requests using `state` parameter.
+If you want you can also filter by multiple labels by passing `label`.
 
 
 ```console
