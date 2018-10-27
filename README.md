@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="assets/reviewio-logo.png"><br>
+  <img src="https://github.com/borzecki/reviewio/raw/master/assets/reviewio-logo.png"><br>
   Take a sip of coffee, kick back and enjoy pull request stats from your project!
 </p>
 
@@ -40,6 +40,9 @@ In order to preview stats you'll need to supply project name.
 
 Optionally you can filter by `open`, `closed` or `all` pull requests using `state` parameter.
 If you want you can also filter by multiple labels by passing `label`.
+
+By default weights of pull requests are calculated based on introduced number of changes (sum of additions and deletions).
+However you can specify this method explicitly using `--weight-method` option.
 
 
 ```console

@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setup(
     name='reviewio',
-    version='0.1.5',
+    version='0.1.6',
     author='borzeckid',
     author_email='borzecki.daniel@gmail.com',
-    description= 'Display statistics of pull request reviewers for your project',
+    description='Display statistics of pull request reviewers for your project',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/borzecki/reviewio',

@@ -3,6 +3,7 @@ from collections import Counter
 from functools import reduce
 
 import click
+import requests
 from colorama import Fore
 from github import Github, UnknownObjectException
 
@@ -19,13 +20,22 @@ def print_list_item(item):
     click.echo(' • {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
 
 
-def extract_reviewers(pull_request):
+def extract_reviewers(pull_request, extract_weight):
     sources = [
         set([rev.user for rev in pull_request.get_reviews() if rev.state in ['APPROVED', 'REQUEST_CHANGES']]),
         set([rev for rev in pull_request.get_review_requests()[0]]),
         set([rev for rev in pull_request.get_review_requests()[1]])
     ]
-    return reduce(set.union, sources)
+    points = extract_weight(pull_request)
+    return {user: points for user in reduce(set.union, sources)}
+
+
+def extract_complex(pull_request):
+    return pull_request.additions + pull_request.deletions
+
+
+def extract_simple(pull_request):  # noqa
+    return 1
 
 
 def display_user_counter(counter, headline):
@@ -46,9 +56,12 @@ def cli(token):
 
 @cli.command()
 @click.argument('name')
+@click.option('--weight-method', '-w', default='changes',
+              type=click.Choice(['simple', 'changes']),
+              help='Select method of calculating weights of pull requests.')
 @click.option('--label', 'labels', multiple=True)
 @click.option('--state', default='open')
-def show(name, labels, state):
+def show(name, labels, state, weight_method):
     """Display reviewers stats for given repository"""
     g = Github(cli.token)
 
@@ -61,6 +74,11 @@ def show(name, labels, state):
     review_counter = Counter()
     creator_counter = Counter()
 
+    if weight_method == 'simple':
+        extract_weight = extract_simple
+    else:
+        extract_weight = extract_complex
+
     if labels:
         labels = set(labels)
         pull_requests = [p for p in pull_requests if
@@ -70,8 +88,8 @@ def show(name, labels, state):
     with click.progressbar(pull_requests, length=pull_requests_length,
                            show_eta=False, label='Processing Pull Requests') as pull_requests_bar:
         for pull in pull_requests_bar:
-            review_counter.update(extract_reviewers(pull))
-            creator_counter.update({pull.user: 1})
+            review_counter.update(extract_reviewers(pull, extract_weight))
+            creator_counter.update({pull.user: extract_weight(pull)})
     display_user_counter(review_counter, 'Reviewers ranking:')
     display_user_counter(creator_counter, 'Creators ranking:')
 
@@ -81,16 +99,24 @@ def show(name, labels, state):
 def labels(name):
     """Display list of labels for given repository."""
     g = Github(cli.token)
-    for label in g.get_repo(name).get_labels():
-        print_list_item(label.name)
+    try:
+        for label in g.get_repo(name).get_labels():
+            print_list_item(label.name)
+    except requests.exceptions.ConnectionError:
+        raise click.ClickException('Check your internet connection!')
+    except UnknownObjectException:
+        raise click.ClickException('Repository not found!')
 
 
 @cli.command()
 def repos():
     """Show list of your repos."""
     g = Github(cli.token)
-    for repo in g.get_user().get_repos():
-        print_list_item(repo.full_name)
+    try:
+        for repo in g.get_user().get_repos():
+            print_list_item(repo.full_name)
+    except requests.exceptions.ConnectionError:
+        raise click.ClickException('Check your internet connection!')
 
 
 if __name__ == '__main__':
