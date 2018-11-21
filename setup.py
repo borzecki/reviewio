@@ -1,11 +1,11 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='reviewio',
-    version='0.1.6',
+    version='0.1.7',
     author='borzeckid',
     author_email='borzecki.daniel@gmail.com',
     description='Display statistics of pull request reviewers for your project',

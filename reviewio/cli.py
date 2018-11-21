@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 from collections import Counter
-from functools import reduce
 
 import click
 import requests
 from colorama import Fore
+from functools import reduce
 from github import Github, UnknownObjectException
 
 
@@ -12,12 +12,12 @@ def print_bar(iteration, total, prefix='', length=44):
     percent = round(100 * (iteration / float(total)), 1)
     filled = int(length * iteration // total)
     bar = '#' * filled + '-' * (length - filled)
-    click.echo('{}{:<20}{} [{}] {:>7}% ({})'
+    click.echo('{}{:<25}{} [{}] {:>7}% ({})'
                .format(Fore.GREEN, prefix, Fore.RESET, bar, percent, iteration))
 
 
 def print_list_item(item):
-    click.echo(' • {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
+    click.echo(' ✥ {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
 
 
 def extract_reviewers(pull_request, extract_weight):
@@ -59,9 +59,9 @@ def cli(token):
 @click.option('--weight-method', '-w', default='changes',
               type=click.Choice(['simple', 'changes']),
               help='Select method of calculating weights of pull requests.')
-@click.option('--label', 'labels', multiple=True)
+@click.option('--label', 'label_list', multiple=True)
 @click.option('--state', default='open')
-def show(name, labels, state, weight_method):
+def show(name, label_list, state, weight_method):
     """Display reviewers stats for given repository"""
     g = Github(cli.token)
 
@@ -79,10 +79,10 @@ def show(name, labels, state, weight_method):
     else:
         extract_weight = extract_complex
 
-    if labels:
-        labels = set(labels)
+    if label_list:
+        label_set = set(label_list)
         pull_requests = [p for p in pull_requests if
-                         labels <= set(l.name for l in p.labels)]
+                         label_set <= set(l.name for l in p.labels)]
         pull_requests_length = len(pull_requests)
 
     with click.progressbar(pull_requests, length=pull_requests_length,
