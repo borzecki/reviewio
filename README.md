@@ -44,6 +44,7 @@ If you want you can also filter by multiple labels by passing `label`.
 By default weights of pull requests are calculated based on introduced number of changes (sum of additions and deletions).
 However you can specify this method explicitly using `--weight-method` option.
 
+Since version `0.2` `reviewio` is taking into account pull requests younger than a month. You can modify this using `-y` or `--younger-than` parameter with the value of week, month, year or all.
 
 ```console
 $ reviewio show django/django

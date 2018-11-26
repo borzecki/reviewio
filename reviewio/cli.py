@@ -1,23 +1,12 @@
 #!/usr/bin/env python
 from collections import Counter
+from datetime import timedelta, datetime
 
 import click
 import requests
 from colorama import Fore
 from functools import reduce
 from github import Github, UnknownObjectException
-
-
-def print_bar(iteration, total, prefix='', length=44):
-    percent = round(100 * (iteration / float(total)), 1)
-    filled = int(length * iteration // total)
-    bar = '#' * filled + '-' * (length - filled)
-    click.echo('{}{:<25}{} [{}] {:>7}% ({})'
-               .format(Fore.GREEN, prefix, Fore.RESET, bar, percent, iteration))
-
-
-def print_list_item(item):
-    click.echo(' ✥ {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
 
 
 def extract_reviewers(pull_request, extract_weight):
@@ -38,12 +27,42 @@ def extract_simple(pull_request):  # noqa
     return 1
 
 
+def print_bar(iteration, total, prefix='', length=44):
+    percent = round(100 * (iteration / float(total)), 1)
+    filled = int(length * iteration // total)
+    bar = '#' * filled + '-' * (length - filled)
+    click.echo('{}{:<25}{} [{}] {:>7}% ({})'
+               .format(Fore.GREEN, prefix, Fore.RESET, bar, percent, iteration))
+
+
+def print_list_item(item):
+    click.echo(' ✥ {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
+
+
 def display_user_counter(counter, headline):
     total_sum = sum(counter.values())
     click.echo()
     click.echo(headline)
+
     for item, i in sorted(counter.items(), key=lambda pair: pair[1], reverse=True):
         print_bar(i, total_sum, prefix=item.login)
+
+
+def time_condition(pull_request, condition):
+    """Returns True if pull_request's created_at matches given time frame."""
+
+    if condition == 'all':
+        return True
+    elif condition == 'week':
+        delta = timedelta(days=7)
+    elif condition == 'month':
+        delta = timedelta(days=31)
+    elif condition == 'year':
+        delta = timedelta(days=365)
+    else:
+        return False
+
+    return pull_request.created_at > datetime.now() - delta
 
 
 @click.group()
@@ -59,9 +78,12 @@ def cli(token):
 @click.option('--weight-method', '-w', default='changes',
               type=click.Choice(['simple', 'changes']),
               help='Select method of calculating weights of pull requests.')
-@click.option('--label', 'label_list', multiple=True)
+@click.option('--label', '-l', 'label_list', multiple=True)
 @click.option('--state', default='open')
-def show(name, label_list, state, weight_method):
+@click.option('--younger-than', '-y', 'younger_than',
+              help='Take into account only pull requests younger than.',
+              type=click.Choice(['week', 'month', 'year', 'all']), default='month')
+def show(name, label_list, state, weight_method, younger_than):
     """Display reviewers stats for given repository"""
     g = Github(cli.token)
 
@@ -70,7 +92,10 @@ def show(name, label_list, state, weight_method):
     except UnknownObjectException:
         raise click.ClickException('Repository not found!')
 
-    pull_requests_length = pull_requests.totalCount
+    # filter by creation date
+    pull_requests = [request for request in pull_requests if time_condition(request, younger_than)]
+    pull_requests_length = len(pull_requests)
+
     review_counter = Counter()
     creator_counter = Counter()
 
