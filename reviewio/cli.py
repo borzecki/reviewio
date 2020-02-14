@@ -6,14 +6,14 @@ import click
 import requests
 from colorama import Fore
 from functools import reduce
-from github import Github, UnknownObjectException
+from github import Github, UnknownObjectException, NamedUser
 
 
 def extract_reviewers(pull_request, extract_weight):
     sources = [
         set([rev.user for rev in pull_request.get_reviews() if rev.state in ['APPROVED', 'REQUEST_CHANGES']]),
-        set([rev for rev in pull_request.get_review_requests()[0]]),
-        set([rev for rev in pull_request.get_review_requests()[1]])
+        set([rev for rev in pull_request.get_review_requests()[0] if isinstance(rev, NamedUser.NamedUser)]),
+        set([rev for rev in pull_request.get_review_requests()[1] if isinstance(rev, NamedUser.NamedUser)])
     ]
     points = extract_weight(pull_request)
     return {user: points for user in reduce(set.union, sources)}
