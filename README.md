@@ -1,9 +1,7 @@
-
 <p align="center">
   <img src="https://github.com/borzecki/reviewio/raw/master/assets/reviewio-logo.png"><br>
-  Take a sip of coffee, kick back and enjoy pull request stats from your project!
+  Provides meaningful insights into your pull requests since 2018
 </p>
-
 
 ## Installation
 
@@ -28,7 +26,7 @@ $ pip install -r requirements.txt
 
 ## Configuration
 
-This tool uses `PyGithub` library for communication with GitHub. Authentication is handled by providing environmental variable `GITHUB_TOKEN` which should be generated using instructions from [github help pages](https://help.github.com/articles/creating-an-access-token-for-command-line-use/).
+This tool uses `PyGithub` library for communication with GitHub. Authentication is handled by providing the environmental variable `GITHUB_TOKEN` which should be generated using instructions from [github help pages](https://help.github.com/articles/creating-an-access-token-for-command-line-use/).
 
 ```
 export GITHUB_TOKEN='{TOKEN}'
@@ -36,15 +34,26 @@ export GITHUB_TOKEN='{TOKEN}'
 
 ## Usage
 
-In order to preview stats you'll need to supply project name.
+In order to calculate stats, you'll need to supply the project name.
 
-Optionally you can filter by `open`, `closed` or `all` pull requests using `state` parameter.
-If you want you can also filter by multiple labels by passing `label`.
+The most basic usage:
 
-By default weights of pull requests are calculated based on introduced number of changes (sum of additions and deletions).
-However you can specify this method explicitly using `--weight-method` option.
+```
+$ reviewio show REPO_NAME
+```
 
-Since version `0.2` `reviewio` is taking into account pull requests younger than a month. You can modify this using `-y` or `--younger-than` parameter with the value of week, month, year or all.
+#### Filters
+
+It's possible to filter out only the pull requests you're interested in by using following set of parameters.
+
+| name            | options                       | default | description                                                                                                                                                                          |
+| --------------- | ----------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `state`         | open, closed, all             | open    | Select only pull requests with a given state.                                                                                                                                        |
+| `weight-method` | changes, simple               | changes | By default weights of pull requests are calculated based on introduced number of changes (sum of additions and deletions). Simple option counts each pull request with equal weight. |
+| `younger-than`  | week, month, year, all        | month   | Taking into account pull requests younger than a specified period.                                                                                                                   |
+| `label`         | labels used in the repository |         | Allows you to filter pull requests using multiple labels.                                                                                                                            |
+
+#### Examples
 
 ```console
 $ reviewio show django/django
@@ -92,15 +101,15 @@ astandley              [--------------------------------------------]     1.8% (
 
 ### Hint
 
-You can use this super secret commands:
+You can use this super-secret commands:
 
-* To get list of repositories
+- To get a list of repositories
 
 ```
 $ reviewio repos
 ```
 
-* To get list of labels for given repository
+- To get a list of labels for a given repository
 
 ```
 $ reviewio labels django/django

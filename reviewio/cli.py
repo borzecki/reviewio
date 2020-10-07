@@ -8,7 +8,6 @@ from colorama import Fore
 from functools import reduce
 from github import Github, UnknownObjectException, NamedUser
 
-
 def extract_reviewers(pull_request, extract_weight):
     sources = [
         set([rev.user for rev in pull_request.get_reviews() if rev.state in ['APPROVED', 'REQUEST_CHANGES']]),
@@ -18,14 +17,11 @@ def extract_reviewers(pull_request, extract_weight):
     points = extract_weight(pull_request)
     return {user: points for user in reduce(set.union, sources)}
 
-
 def extract_complex(pull_request):
     return pull_request.additions + pull_request.deletions
 
-
 def extract_simple(pull_request):  # noqa
     return 1
-
 
 def print_bar(iteration, total, prefix='', length=44):
     percent = round(100 * (iteration / float(total)), 1)
@@ -34,10 +30,8 @@ def print_bar(iteration, total, prefix='', length=44):
     click.echo('{}{:<25}{} [{}] {:>7}% ({})'
                .format(Fore.GREEN, prefix, Fore.RESET, bar, percent, iteration))
 
-
 def print_list_item(item):
     click.echo(' ✥ {}{}{}'.format(Fore.GREEN, item, Fore.RESET))
-
 
 def display_user_counter(counter, headline):
     total_sum = sum(counter.values())
@@ -46,7 +40,6 @@ def display_user_counter(counter, headline):
 
     for item, i in sorted(counter.items(), key=lambda pair: pair[1], reverse=True):
         print_bar(i, total_sum, prefix=item.login)
-
 
 def time_condition(pull_request, condition):
     """Returns True if pull_request's created_at matches given time frame."""
