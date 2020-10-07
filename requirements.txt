@@ -1,4 +1,4 @@
 requests>=2.20.0
 PyGithub==1.43
-click==6.7
-colorama==0.3.9
+click==7.1.2
+colorama==0.4.3

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='reviewio',
-    version='0.2',
+    version='0.2.1',
     author='borzeckid',
     author_email='borzecki.daniel@gmail.com',
     description='Display statistics of pull request reviewers for your project',
